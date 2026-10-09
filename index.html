@@ -85,12 +85,40 @@ footer{text-align:center;padding:25px;color:#8994aa;font-size:13px}
 <footer>© 2026 Katora AI · Built for creators and developers</footer>
 
 <script>
-function askAI(){
-const q=document.getElementById('question').value.trim();
-if(!q){alert('Please type a question first.');return;}
-document.getElementById('output').textContent=
-'Your question: '+q+
-'\n\nKatora AI interface is working, but real AI responses require an API and a secure backend. You can use the Prompt Studio below to prepare a detailed prompt.';
+async function askAI(){
+  const q = document.getElementById('question').value.trim();
+  const output = document.getElementById('output');
+
+  if (!q) {
+    alert('Please type a question first.');
+    return;
+  }
+
+  output.textContent = 'Katora AI soch raha hai...';
+
+  try {
+    const response = await fetch(
+      'https://katora-ai-backend.prakashprajapatp92.workers.dev',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: q })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'AI request failed.');
+    }
+
+    output.textContent = data.text || 'Koi response nahi mila.';
+
+  } catch (error) {
+    output.textContent = 'Error: ' + error.message;
+  }
 }
 function clearChat(){
 document.getElementById('question').value='';
